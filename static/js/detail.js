@@ -3,7 +3,7 @@ $(document).ready(function () {
   detail_listing();
   getComments();
 });
-
+test commit
 const detail_listing = () =>{
     let news_id = location.href.split("?")[1].split("=")[1];
     console.log("test!!!")
