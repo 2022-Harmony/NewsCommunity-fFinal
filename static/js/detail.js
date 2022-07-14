@@ -61,7 +61,7 @@ const detail_listing = () =>{
                                     <div id="bookmark" class="bookmark level-item">
                                         <div id="${postId}">
                                             <a class="is-sparta" aria-label="bookmark"
-                                               onclick="toggle_bookmark(${postId})">
+                                               onclick=toggle_bookmark("${postId}")>
                                                                             <span class="icon is-small"><i class="icon_ fa fa-solid fa-bookmark-o"
                                                                                                            aria-hidden="true"></i></span>
                                             </a>
