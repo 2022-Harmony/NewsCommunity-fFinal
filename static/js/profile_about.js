@@ -210,7 +210,7 @@ function getComments(){
 
 	let profileUrl = $.ajax({
 		async: false,
-		url: `/user/profile/pic/${profileUser}`,
+		url: `/api/user/profile/pic/${profileUser}`,
 		type: "GET",
 		dataType: "text"
 	}).responseText;
@@ -242,7 +242,10 @@ function addHTML(commentId, time, content, username, nickname, profilePicLink) {
 		dataType: "text"
 	}).responseText;
 
-	let tempHtml = `<article class="media comment-show">
+	let tempHtml = ``;
+	let loginUserId = localStorage.getItem('IllllIlIII_hid');
+	if (loginUserId == profileUser) {
+		tempHtml = `<article class="media comment-show">
                         <figure class="media-left">
                             <p class="image is-64x64">
                                 <img src=${profilePicLink}>
@@ -273,6 +276,32 @@ function addHTML(commentId, time, content, username, nickname, profilePicLink) {
                         <textarea id="${commentId}-editor" class="textarea" placeholder="수정할 내용 입력">${content}</textarea>
                         <button class="edit-btn button is-info" onclick="editComment(${commentId})">수정</button>
                     </div>`;
+	} else {
+		tempHtml = `<article class="media comment-show">
+                        <figure class="media-left">
+                            <p class="image is-64x64">
+                                <img src="${profilePicLink}" onclick="window.location.href='/NewsCommunity-fFinal/profile.html?user=${username}'">
+                            </p>
+                        </figure>
+                        <div class="media-content">
+                            <div class="content">
+                                <p>
+                                    <strong>${nickname}</strong> <small>@${username}</small> <small>${time}</small>
+                                    <br>
+                                    ${content}
+                                </p>
+                            </div>
+                            <nav class="level is-mobile">
+                                <div class="level-left">
+                                    <a class="level-item">
+                                        <span class="heart icon is-small"><i onclick="updateLike(${commentId})" class="fa fa-heart-o"></i></span><span class="${commentId}-like-number like-count">${likesCount}</span>
+                                    </a>
+                                </div>
+                            </nav>
+                        </div>
+                    </article>`;
+	}
+
 	$('#comment-box').append(tempHtml);
 }
 
