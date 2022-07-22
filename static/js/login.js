@@ -26,7 +26,7 @@ function refreshToken() {
 			if (output == "success") {
 				token = response.getResponseHeader("token");
 				localStorage.setItem("les_uid", token)
-				window.location.href = "/NewsCommunity-fFinal/index.html"
+				window.location.href = "index.html"
 			}
 		},
 		error: function () {
