@@ -13,9 +13,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Rubik+Mono+One&family=Do+Hyeon&family=Nanum+Gothic:wght@400;700&display=swap"
           rel="stylesheet">
-
+          
     <link rel="stylesheet" href="static/base.css">
     <link rel="stylesheet" href="static/detail.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/paginationjs/2.1.4/pagination.css"/>
+
 
     <!-- script 모음 -->
     <!-- jQuery -->
@@ -25,6 +27,7 @@
     <script src="https://kit.fontawesome.com/f6788aacd4.js" crossorigin="anonymous"></script>
 
     <script src="static/js/basic.js"></script>
+
 
 <!--    <script src="/NewsCommunity-fFinal/static/js/login.js"></script>-->
 <!--    <script src="/NewsCommunity-fFinal/static/js/ui.js"></script>-->
@@ -96,7 +99,6 @@
         </div>
     </article>
 </div>
-<hr class="comment_hr_second fixed">
 
 
 <section class="section">
@@ -129,8 +131,8 @@
 <!--            </div>-->
 <!--        </div>-->
     </div>
-
-    <div id="comment-box" class="container fixed">
+    <div id="pagination" class="pagination"></div>
+    <div id="comment-container" class="container fixed">
         <article class="media">
             <figure class="media-left">
                 <p class="image is-64x64">

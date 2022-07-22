@@ -10,15 +10,18 @@ $(document).ready(function () {
 				xhr.setRequestHeader("X-CSRFToken", csrftoken);
 			}
 			xhr.setRequestHeader("Authorization", "Bearer " + token);
+		},
+		error: function (output, status, response) {
+			if (status === 403) {
+				refreshToken($.ajax(this))
+			}
 		}
 	});
-	refreshToken();
 	navIcon()
 })
 
 // 토큰 값 갱신
-function refreshToken() {
-	console.log("refresh");
+function refreshToken(a) {
 	$.ajax({
 		async: false,
 		type: "GET",
@@ -28,8 +31,15 @@ function refreshToken() {
 		success: function (output, status, response) {
 			if (output == "success") {
 				token = response.getResponseHeader("token");
-				localStorage.setItem("les_uid", token)
+				localStorage.setItem("les_uid", token);
+				setTimeout(a, 500);
 			}
+		},
+		error: function () {
+			localStorage.removeItem('les_uid');
+			localStorage.removeItem('IllllIlIII_hid');
+			alert("재로그인 해주세요!")
+			window.location.href = "/NewsCommunity-fFinal/login.html"
 		}
 	});
 }
@@ -54,15 +64,23 @@ function navIcon() {
 
 $(document).on("click", ".logout_icon", function signOut() {
 	$.ajax({
+		async: false,
 		type: "GET",
 		url: '/api/user/signout',
 		data: {},
 		xhrFields: { withCredentials: true },
-		success: function (response) {
+		success: function () {
+			afterSignOut()
+		}, error: function () {
+			afterSignOut()
 		}
 	});
+});
+
+function afterSignOut() {
 	localStorage.removeItem('les_uid');
 	localStorage.removeItem('IllllIlIII_hid');
 	alert('로그아웃!')
 	window.location.href = "index.html"
 });
+

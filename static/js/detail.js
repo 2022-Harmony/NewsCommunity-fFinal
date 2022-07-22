@@ -7,6 +7,7 @@ $(document).ready(function () {
   getComments();
   getCommentCount();
   addView();
+  commentTextAreaControl();
 });
 
 
@@ -31,6 +32,7 @@ const detail_listing = () =>{
         url: '/api/news/details/'+news_id,
         data: {},
         success: function (response) {
+            console.log(response)
             let newsObj = response;
             $('#news-box').empty();
             // 서버로 부터 받은 뉴스 리스트의 각 뉴스에 접근해 관련 정보를 받는다.
@@ -79,6 +81,13 @@ const detail_listing = () =>{
 String.replaceAll = function(search, replacement) {
     return this.split(search).join(replacement);
 };
+
+function commentTextAreaControl() {
+    let loginUserId = localStorage.getItem('IllllIlIII_hid');
+    if (loginUserId == null) {
+        $('#editArea').empty();
+    }
+}
 
 // 현재 보고 있는 뉴스의 아이디(PK)를 얻는 함수
 function getNewsId() {
@@ -167,39 +176,70 @@ function num2str(count) {
     return count
 }
 
-
-// 댓글 리스팅
-function getComments() {
-    let newsId = getNewsId();
-    $("#comment-box").empty();
-
-    let currentLoginUserName = $.ajax({
-        async: false,
-        url: "/api/user/me",
-        type: "GET",
-        dataType: "text"
-    }).responseText;
-
+function getProfileUrl(username) {
     let profileUrl = $.ajax({
         async: false,
-        url: `/user/profile/pic/${currentLoginUserName}`,
+        url: `/user/profile/pic/${username}`,
         type: "GET",
         dataType: "text"
     }).responseText;
+    return profileUrl;
+}
 
-    $.ajax({
-        type: "GET",
-        url: `/api/user/comments/${newsId}`,
-        success: function (response) {
-            for (let i=0; i<response.length; i++) {
-                let comment = response[i];
+// // 댓글 리스팅
+// function getComments() {
+//     let newsId = getNewsId();
+//     $("#comment-box").empty();
+//
+//     $.ajax({
+//         type: "GET",
+//         url: `/api/user/comments/${newsId}`,
+//         success: function (response) {
+//             for (let i=0; i<response.length; i++) {
+//                 let comment = response[i];
+//                 let commentId = comment.commentId;
+//                 let modifiedDate = comment.modifiedAt;
+//                 let time = time2str(new Date(modifiedDate));
+//                 let content = comment.content;
+//                 let username = comment.profileResponseDto.username;
+//                 let nickname = comment.profileResponseDto.nickname;
+//                 let profilePicLink = comment.profileResponseDto.profile_pic == "default" ? "/static/profile_pics/profile_placeholder.png" : getProfileUrl(username);
+//                 addHTML(commentId, time, content, username, nickname, profilePicLink);
+//             }
+//         }
+//     })
+// }
+function getComments() {
+    let newsId = getNewsId();
+    $('#comment-container').empty();
+    $('#pagination').pagination({
+        dataSource: `http://localhost:4993/api/comments/${newsId}`,
+        locator: 'items',
+        totalNumber: 120,
+        alias: {
+            pageNumber: 'page',
+            pageSize: 'size'
+        },
+        pageSize: 3,
+        showPrevious: true,
+        showNext: true,
+        ajax: {
+            beforeSend: function() {
+                $('#comment-container').html('댓글 불러오는 중...');
+            }
+        },
+        callback: function(data, pagination) {
+            console.log(pagination);
+            $('#comment-container').empty();
+            for (let i=0; i<data.length; i++) {
+                let comment = data[i];
                 let commentId = comment.commentId;
                 let modifiedDate = comment.modifiedAt;
                 let time = time2str(new Date(modifiedDate));
                 let content = comment.content;
                 let username = comment.profileResponseDto.username;
                 let nickname = comment.profileResponseDto.nickname;
-                let profilePicLink = comment.profileResponseDto.profile_pic == "default" ? "/static/profile_pics/profile_placeholder.png" : profileUrl;
+                let profilePicLink = comment.profileResponseDto.profile_pic == "default" ? "/static/profile_pics/profile_placeholder.png" : getProfileUrl(username);
                 addHTML(commentId, time, content, username, nickname, profilePicLink);
             }
         }
@@ -212,7 +252,7 @@ function getCommentCount() {
     $('#comment_box-head').empty();
     $.ajax({
         type: "GET",
-        url: `/api/user/comments/count/${newsId}`,
+        url: `/api/user/comments/count/${newsId}?page=0$size=3`,
         success: function (response) {
             let tempHtml = `
                 <div class="comment-head">
@@ -254,20 +294,6 @@ function getSortedComments(direction) {
     let newsId = getNewsId();
     $("#comment-box").empty()
 
-    let currentLoginUserName = $.ajax({
-        async: false,
-        url: "/api/user/me",
-        type: "GET",
-        dataType: "text"
-    }).responseText;
-
-    let profileUrl = $.ajax({
-        async: false,
-        url: `/user/profile/pic/${currentLoginUserName}`,
-        type: "GET",
-        dataType: "text"
-    }).responseText;
-
     $.ajax({
         type: "GET",
         url: `/api/user/comments/sort/${newsId}?direction=${direction}`,
@@ -280,7 +306,7 @@ function getSortedComments(direction) {
                 let content = comment.content;
                 let username = comment.profileResponseDto.username;
                 let nickname = comment.profileResponseDto.nickname;
-                let profilePicLink = comment.profileResponseDto.profile_pic == "default" ? "/static/profile_pics/profile_placeholder.png" : profileUrl;
+                let profilePicLink = comment.profileResponseDto.profile_pic == "default" ? "/static/profile_pics/profile_placeholder.png" : getProfileUrl(username);
                 addHTML(commentId, time, content, username, nickname, profilePicLink);
             }
         }
@@ -289,12 +315,7 @@ function getSortedComments(direction) {
 
 function addHTML(commentId, time, content, username, nickname, profilePicLink) {
 
-    let currentLoginUserName = $.ajax({
-        async: false,
-        url: "/api/user/me",
-        type: "GET",
-        dataType: "text"
-    }).responseText;
+    let loginUserId = localStorage.getItem('IllllIlIII_hid');
 
     let likesCount = $.ajax({
         async: false,
@@ -304,7 +325,7 @@ function addHTML(commentId, time, content, username, nickname, profilePicLink) {
     }).responseText;
 
     let tempHtml = ``;
-    if (currentLoginUserName == username) {
+    if (loginUserId == username) {
 
         tempHtml = `<article class="media comment-show">
                         <figure class="media-left">
@@ -363,7 +384,7 @@ function addHTML(commentId, time, content, username, nickname, profilePicLink) {
                     </article>`;
     }
 
-    $("#comment-box").append(tempHtml);
+    $('#comment-container').append(tempHtml);
 }
 
 function showEditTextarea(commentId) {
