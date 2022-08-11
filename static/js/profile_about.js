@@ -46,8 +46,8 @@ $(document).on("click", "#update_profile", function updateProfile() {
 		contentType: false,
 		processData: false,
 		success: function (response) {
-			if (response["result"] == "success") {
-				alert(response["msg"])
+			if (response == "success") {
+				alert("프로필 변경이 완료되었습니다.")
 				window.location.reload()
 			}
 		}
@@ -64,9 +64,9 @@ function getProfile(username) {
 		success: function (response) {
 			let status = response['status']
 			let link = response['link']!="default" ? response['link'] : "/static/profile_pics/profile_placeholder.png"
-			let nickname = response['profile']['nickname']
-			let picName = response['profile']['profile_pic']!="default" ? response['profile']['profile_pic'] : "기본 이미지"
-			let info = response['profile']['profile_info']!=null ? response['profile']['profile_info'] : ""
+			let nickname = response['nickname']
+			let picName = response['profile_pic']!="default" ? response['profile_pic'] : "기본 이미지"
+			let info = response['profile_info']!=null ? response['profile_info'] : ""
 			let img = `<img class="is-rounded" src=${link} alt="No img"/>`
 			$("#profile-pic").append(img)
 			$("#nickname").append(nickname)
